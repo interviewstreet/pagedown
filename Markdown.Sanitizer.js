@@ -34,7 +34,7 @@
             return tag;
         } else if (tag.match(table_white)) {
             if (tag.match(/^<table[^>]*>/gi)) {
-                return "<table>";
+                return "<table class=\"challenge-body-table\">";
             } else if (tag.match(/^<thead[^>]*>/gi)) {
                 return "<thead>";
             } else if (tag.match(/^<tr[^>]*>/gi)) {
