@@ -43,12 +43,12 @@
                 return "<tbody>";
             } else if (tag.match(/^<tfoot[^>]*>/gi)) {
                 return "<tfoot>";
-            } else if (tag.match(/^<th[^>]*>/gi)) {
-                return "<th>";
-            } else if (tag.match(/^<td(\s+(colspan|rowspan)=("[1-9]"|'[1-9]')){0,2}\s*>/gi)) {
+            } else if (tag.match(/^<(td|th)(\s+(colspan|rowspan)=("[1-9]"|'[1-9]')){0,2}\s*>/gi)) {
                 return tag;
             } else if (tag.match(/^<td[^>]*>/gi)) {
                 return "<td>";
+            } else if (tag.match(/^<th[^>]*>/gi)) {
+                return "<th>";
             } else {
                 return tag;
             }
