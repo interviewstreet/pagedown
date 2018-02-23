@@ -27,31 +27,37 @@
     // <img src="url..." optional width  optional height  optional alt  optional title
     var img_white = /^(<img\ssrc="(https?:\/\/|\/)[-A-Za-z0-9+&@#\/%?=~_|!:,.;\(\)*[\]$]+"(\swidth="\d{1,3}")?(\sheight="\d{1,3}")?(\salt="[^"<>]*")?(\stitle="[^"<>]*")?\s?\/?>)$/i;
 
+    // just usual table tags
     var table_white = /^(<\/?(table|tr|thead|tbody|tfoot|th|td)[^>]*>)$/i;
 
     function sanitizeTag(tag) {
         if (tag.match(basic_tag_whitelist) || tag.match(a_white) || tag.match(img_white)) {
             return tag;
         } else if (tag.match(table_white)) {
-            if (tag.match(/^<table[^>]*>/gi)) {
-                return "<table class=\"challenge-body-table\">";
-            } else if (tag.match(/^<thead[^>]*>/gi)) {
-                return "<thead>";
-            } else if (tag.match(/^<tr[^>]*>/gi)) {
-                return "<tr>";
-            } else if (tag.match(/^<tbody[^>]*>/gi)) {
-                return "<tbody>";
-            } else if (tag.match(/^<tfoot[^>]*>/gi)) {
-                return "<tfoot>";
-            } else if (tag.match(/^<(td|th)(\s+(colspan|rowspan)=("[1-9]"|'[1-9]')){0,2}\s*>/gi)) {
-                return tag;
-            } else if (tag.match(/^<td[^>]*>/gi)) {
-                return "<td>";
-            } else if (tag.match(/^<th[^>]*>/gi)) {
-                return "<th>";
-            } else {
-                return tag;
+            // capturing base tag without any attributes
+            var base_tag = tag.replace(/<\/?(\w+).*/, "$1");
+            // checking closing tag
+            if (tag.match(/<\/.*/)) {
+                return "</" + base_tag + ">";
             }
+            // taking all attributes from the tag of the form xyz="abc"
+            var attribute_values = tag.match(/[a-z]+="[\w-]+"/g);
+            if (!attribute_values) {
+                return "<" + base_tag + ">";
+            }
+            var final_tag = "<" + base_tag;
+            attribute_values.forEach(function (attribute) {
+                var items = attribute.split("=");
+                var key = items[0];
+                var value = items[1];
+                if (key == "class") {
+                    final_tag += " " + attribute;
+                } else if ((key == "rowspan" || key == "colspan") && value.match(/"[1-9]"/)) {
+                    final_tag += " " + attribute;
+                }
+            });
+            final_tag += ">";
+            return final_tag;
         }
         else
             return "";
