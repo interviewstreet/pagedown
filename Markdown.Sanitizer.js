@@ -41,7 +41,7 @@
                 return "</" + base_tag + ">";
             }
             // taking all attributes from the tag of the form xyz="abc"
-            var attribute_values = tag.match(/[a-z]+="[\w-]+"/g);
+            var attribute_values = tag.match(/[a-z]+="[\w\s-]+"/g);
             if (!attribute_values) {
                 return "<" + base_tag + ">";
             }
